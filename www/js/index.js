@@ -32,13 +32,29 @@ function onDeviceReady() {
 
 function init() {
     $("#addTask").click(addTask);
+    //localStorage.setItem("taskList",[])
+    var taskList = JSON.parse(localStorage.getItem("taskList")) || [];
+    localStorage.setItem("taskList", JSON.stringify(taskList));
+
+    for (var i = 0; i < taskList.length; i++) {
+        addTaskFromList(taskList[i]);
+    }
+
 }
 
 function addTask() {
     var newTask = window.prompt("Ingrese una nueva tarea:", "Task: ");
 
     if (newTask !== null && newTask.trim() !== "") {
+        var taskList = JSON.parse(localStorage.getItem("taskList")) || [];
         var listItem = $("<li>" + newTask + " <button class='deleteTask' style='float: right;'>X</button></li>");
+
+                // Agregar la nueva tarea a la lista
+                taskList.push(newTask);
+
+                // Guardar la lista actualizada en el localStorage
+                localStorage.setItem("taskList", JSON.stringify(taskList));
+        
         
         // Agregar estilo CSS para empujar el botón hacia la derecha
         listItem.find(".deleteTask").css("margin-left", "auto");
@@ -50,6 +66,7 @@ function addTask() {
             var listId = parentListItem.parent().attr('id');
             parentListItem.remove();
             $("#" + listId).listview("refresh");
+            
         });
 
         $("ul").append(listItem);
@@ -59,6 +76,29 @@ function addTask() {
     }
 }
 
+function addTaskFromList(task) {
+    var listItem = $("<li>" + task + " <button class='deleteTask' style='float: right;'>X</button></li>");
+
+    // Agregar estilo CSS para empujar el botón hacia la derecha
+    listItem.find(".deleteTask").css("margin-left", "auto");
+
+    // Asignar un controlador de eventos al botón de eliminación dentro del nuevo elemento
+    listItem.find(".deleteTask").on("click", function() {
+        // Utilizar .closest() para encontrar el elemento <li> padre y luego .remove() para eliminarlo
+        var parentListItem = $(this).closest("li");
+        var listId = parentListItem.parent().attr('id');
+        parentListItem.remove();
+        $("#" + listId).listview("refresh");
+        
+        // También debes actualizar la lista en el localStorage después de eliminar la tarea
+        var taskList = JSON.parse(localStorage.getItem("taskList")) || [];
+        taskList.splice(taskList.indexOf(task), 1);
+        localStorage.setItem("taskList", JSON.stringify(taskList));
+    });
+
+    $("ul").append(listItem);
+    $("ul").listview("refresh");
+}
 
 
 
