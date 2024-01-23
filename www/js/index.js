@@ -47,13 +47,24 @@ function addTask() {
 
     if (newTask !== null && newTask.trim() !== "") {
         var taskList = JSON.parse(localStorage.getItem("taskList")) || [];
-        var listItem = $("<li>" + newTask + " <button class='deleteTask' style='float: right;'>X</button></li>");
+        var listItem = $("<li><span class='taskText'>" + newTask + "</span> <button class='modifyTask' style='float: right;'>Modificar</button> <button class='deleteTask' style='float: right;'>X</button></li>");
 
                 // Agregar la nueva tarea a la lista
                 taskList.push(newTask);
 
                 // Guardar la lista actualizada en el localStorage
                 localStorage.setItem("taskList", JSON.stringify(taskList));
+                listItem.find(".modifyTask").on("click", function() {
+                    var newText = window.prompt("Modificar tarea:", $(this).siblings(".taskText").text());
+                    if (newText !== null && newText.trim() !== "") {
+                        $(this).siblings(".taskText").text(newText);
+        
+                        // También debes actualizar la lista en el localStorage después de modificar la tarea
+                        var taskList = JSON.parse(localStorage.getItem("taskList")) || [];
+                        taskList[$(this).closest("li").index()] = newText;
+                        localStorage.setItem("taskList", JSON.stringify(taskList));
+                    }
+                });
         
         
         // Agregar estilo CSS para empujar el botón hacia la derecha
@@ -66,7 +77,6 @@ function addTask() {
             var listId = parentListItem.parent().attr('id');
             parentListItem.remove();
             $("#" + listId).listview("refresh");
-            
         });
 
         $("ul").append(listItem);
@@ -77,7 +87,20 @@ function addTask() {
 }
 
 function addTaskFromList(task) {
-    var listItem = $("<li>" + task + " <button class='deleteTask' style='float: right;'>X</button></li>");
+    var listItem = $("<li><span class='taskText'>" + newTask + "</span> <button class='modifyTask' style='float: right;'>Modificar</button> <button class='deleteTask' style='float: right;'>X</button></li>");
+
+    listItem.find(".modifyTask").on("click", function() {
+        var newText = window.prompt("Modificar tarea:", $(this).siblings(".taskText").text());
+        if (newText !== null && newText.trim() !== "") {
+            $(this).siblings(".taskText").text(newText);
+
+            // También debes actualizar la lista en el localStorage después de modificar la tarea
+            var taskList = JSON.parse(localStorage.getItem("taskList")) || [];
+            taskList[$(this).closest("li").index()] = newText;
+            localStorage.setItem("taskList", JSON.stringify(taskList));
+        }
+    });
+
 
     // Agregar estilo CSS para empujar el botón hacia la derecha
     listItem.find(".deleteTask").css("margin-left", "auto");
