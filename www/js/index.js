@@ -30,6 +30,7 @@ function onDeviceReady() {
     init();
 }
 
+
 function init() {
     $("#addTask").click(addTask);
     //localStorage.setItem("taskList",[])
